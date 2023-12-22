@@ -39,49 +39,38 @@ class HomeView extends GetView<HomeController> {
   Widget getProductList(BuildContext context) {
     return controller.obx(
       (state) {
-        return GetBuilder(
-            init: HomeController(),
-            initState: (i) {
-              controller.myBox = Hive.box<Product>(HiveHelper.boxName);
-            },
-            builder: (context) {
-              return ValueListenableBuilder<Box>(
-                  valueListenable: controller.myBox!.listenable(),
-                  builder: (context, box, widget) {
-                    return Obx(
-                      () => ListView.builder(
-                        shrinkWrap: true,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: controller.productList.length,
-                        itemBuilder: (
-                          context,
-                          index,
-                        ) {
-                          return ProductListItem(
-                            productItemData: controller.productList[index],
-                            onTap: () {
-                              Get.toNamed(Routes.PRODUCT_DETAILS, arguments: [
-                                {
-                                  "data": json.encode(
-                                      controller.productList[index].toJson())
-                                },
-                                {"index": index}
-                              ])?.then((value) {
-                                if (value != null) {
-                                  Product data = value as Product;
-                                  controller.productList[controller.productList
-                                      .indexWhere((element) =>
-                                          element.id == data.id)] = data;
-                                  controller.update();
-                                }
-                              });
-                            },
-                          ).paddingSymmetric(vertical: 12, horizontal: 24);
-                        },
-                      ),
-                    );
+        return Obx(
+          () => ListView.builder(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            itemCount: controller.productList.length,
+            itemBuilder: (
+              context,
+              index,
+            ) {
+              return ProductListItem(
+                productItemData: controller.productList[index],
+                onTap: () {
+                  Get.toNamed(Routes.PRODUCT_DETAILS, arguments: [
+                    {
+                      "data": json.encode(
+                          controller.productList[index].toJson())
+                    },
+                    {"index": index}
+                  ])?.then((value) {
+                    if (value != null) {
+                      Product data = value as Product;
+                      controller.productList[controller.productList
+                          .indexWhere((element) =>
+                              element.id == data.id)] = data;
+                      controller.update();
+                    }
                   });
-            });
+                },
+              ).paddingSymmetric(vertical: 12, horizontal: 24);
+            },
+          ),
+        );
       },
       onError: (msg) {
         printf("Error $msg");
